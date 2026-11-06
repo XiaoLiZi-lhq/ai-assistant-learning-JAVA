@@ -1,42 +1,66 @@
 # AI Assistant Learning JAVA
 
-一个用于复习 Java 基础知识的问答项目，每次上传都是在上一个版本基础上更加完善的迭代版本。
+一个「命令行问答助手」的 Java 重构练习：同一个需求，从内存版一路改造成数据库版。**这是一个学习项目——它展示的是迭代过程，而不是成品。**
 
-## 项目说明
+每次上传都是在上一个版本基础上的完整迭代，翻 commit 历史可以看到每一步改了什么、为什么改。
 
-本项目通过逐步迭代的方式复习和巩固 Java 核心知识，当前包含两个版本：
+## 迭代路线
 
-### V1 - 入门版（Main.java）
+```
+V1 HashMap 内存版  →  V2 文件 IO 持久化  →  V4 Maven + MySQL 工程化（进行中）
+```
 
-- 使用 `HashMap` 存储问答数据
-- 练习 Map 的基本操作（put、get、containsKey）
-- 包含待完成的注释提示，适合作为练习题
+（版本号沿用学习时的迭代编号）
 
-### V2 - 进阶版（AiAssistant.java）
+### V1 — 入门版（`src/Main.java`）
 
-- 从外部文件 `knowledge.txt` 读取知识库
-- 使用 `BufferedReader` + `FileReader` 进行文件 I/O
-- 完整的问答交互循环（输入、匹配、退出）
-- 支持空输入处理和异常捕获
+- 问答数据硬编码在 `HashMap` 里，练习 Map 的基本操作（`put` / `get` / `containsKey`）
+- `Scanner` 读取用户输入，串起最简单的问答循环
+- 代码里保留待完成的注释提示，适合当作练习题补全
 
-## 技术要点
+**局限**：数据写死在代码里，加一条知识就要改代码重新编译。
 
-- `HashMap` 数据结构
-- `Scanner` 用户输入读取
-- `BufferedReader` / `FileReader` 文件读取
-- `try-with-resources` 异常处理
-- 字符串分割与匹配
+### V2 — 进阶版（`src/AiAssistant.java`）
+
+- 知识库外置到 `knowledge.txt`（每行 `问题#答案`），加知识不用再动代码
+- `BufferedReader` + `FileReader` 读取文件，`try-with-resources` 管理资源
+- 完整交互循环：输入 → 匹配 → 输出 → 下一轮，含空输入处理与异常捕获
+
+**局限**：纯文本检索只能精确匹配，多用户/并发/模糊查询都做不了。
+
+### V4 — 工程化版（Maven + MySQL，进行中）
+
+把 V2 的文件存储升级为真正的持久层，并完成工程化改造：
+
+- [ ] 改造为 Maven 工程（`pom.xml` 管理依赖，摆脱 IDE 私有工程文件）
+- [ ] 问答知识库迁入 MySQL（JDBC 读写，练习连接管理、预编译语句与 SQL）
+- [ ] 引入 DAO 分层，数据访问与交互逻辑解耦
+- [ ] 为后续接入 Spring Boot + LangChain4j、把「关键词匹配」升级为「大模型回答」做准备
+
+> V4 代码开发中，勾选项完成一项勾一项。
+
+## 为什么公开一个学习项目
+
+- 迭代记录比一个「看起来完成」的成品更能反映学习方式：每一步都跑得起来，每个版本解决上一个版本的局限。
+- 求职时它是我 Java 学习路径的直接证据（V1 → V2 → V4 对应：集合 → IO → 工程化 + 数据库）。
+- 它不假装是生产系统：没有微服务、没有高并发，就是一个诚实的练习项目。
 
 ## 运行方式
 
-在 IntelliJ IDEA 中打开项目，运行 `Main.java` 或 `AiAssistant.java` 即可。
+用 IntelliJ IDEA 打开项目：
+
+- **V1**：运行 `src/Main.java`
+- **V2**：运行 `src/AiAssistant.java`，需保证 `knowledge.txt` 在工作目录（IDEA 默认项目根目录）下
 
 ## 知识库格式
 
-`knowledge.txt` 中每行格式为：
+`knowledge.txt` 每行一条，`#` 分隔问题和答案：
 
 ```
 问题#答案
 ```
 
-用 `#` 分隔问题和答案。
+## Roadmap
+
+- V4：Maven + MySQL 持久化（进行中）
+- 之后：Spring Boot + LangChain4j 接入大模型，从「关键词匹配问答」升级为「可对话的知识助手」
